@@ -19,37 +19,41 @@ public class App {
 
     get("/", (request, response) -> {
       HashMap<String, Object> model = new HashMap<String, Object>();
+
+      model.put("categories", Category.all());
       model.put("template", "templates/index.vtl");
 
       return new ModelAndView(model, layout);
     }, new VelocityTemplateEngine());
 
- //    post("/tasks",(request response) -> {
- //      HashMap<String, Object> model = new HashMap<String, Object>();
- //
- //      String description = request.queryParams("description");
- //      int categories_id = Integer.parseInt(request.queryParams("categories_id"));
- //      Task newTask = new Task(description);
- //
- //      newTask.save();
- //      model.put("task", newTask);
- //      model.put("template", "templates/index.vtl");
- //      response.redirect("/");
- //      return null;
- //    });
- //
- //    post("/categories", (request,response)-> {
- //      HashMap<String, Object> model = new HashMap<String, Object>();
- //
- //      String name = request.queryParams("name");
- //      Category newCategory = new Category(name);
- //      new Category.save();
- //
- //      model.put("category", newCategory);
- //      model.put("template", "templates/index.vtl");
- //      response.redirect("/");
- //      return null;
- //    });
+    post("/tasks",(request, response) -> {
+      HashMap<String, Object> model = new HashMap<String, Object>();
+
+      String description = request.queryParams("description");
+      int category_id = Integer.parseInt(request.queryParams("category_id"));
+      Task newTask = new Task(description);
+
+      newTask.save();
+
+      Category.find(category_id).addTask(newTask);
+      model.put("task", newTask);
+      model.put("template", "templates/index.vtl");
+      response.redirect("/");
+      return null;
+    });
+
+    post("/categories", (request,response)-> {
+      HashMap<String, Object> model = new HashMap<String, Object>();
+
+      String name = request.queryParams("name");
+      Category newCategory = new Category(name);
+      newCategory.save();
+
+      model.put("category", newCategory);
+      model.put("template", "templates/index.vtl");
+      response.redirect("/");
+      return null;
+    });
  //    // do I need this??
  //    get("/tasks/:id", request,response) -> {
  //      HashMap<String, Object> model = new HashMap<String, Object>();
@@ -61,17 +65,32 @@ public class App {
  //      return new ModelAndView(model, layout);
  //    }, new VelocityTemplateEngine());
  // //
- //
- //    get("/categories/:id", (request, response) ->{
- //      HashMap<String, Object> model = new HashMap<String, Object>();
- //      int id = Integer.parseInt(request.params("id"));
- //      Category category = Category.find(id);
- //
- //      model.put("category", category);
- //      model.put("allTasks", Task.all());
- //      model.put("template", "templates/categories.vtl");
- //      return new ModelAndView(model, layout);
- //    }, new VelocityTemplateEngine());
+
+    get("/categories/:id", (request, response) ->{
+      HashMap<String, Object> model = new HashMap<String, Object>();
+      int id = Integer.parseInt(request.params("id"));
+      Category category = Category.find(id);
+
+      model.put("category", category);
+      model.put("tasks", category.getTasks());
+      model.put("template", "templates/categories.vtl");
+      return new ModelAndView(model, layout);
+    }, new VelocityTemplateEngine());
+
+    post("/categories/:category_id/tasks/:task_id/delete", (request, response) -> {
+      HashMap<String, Object> model = new HashMap<String, Object>();
+
+      int catId = Integer.parseInt(request.params(":category_id"));
+      Category myCategory = Category.find(catId);
+
+      int taskId = Integer.parseInt(request.params(":task_id"));
+      Task taskToDelete = Task.find(taskId);
+
+      taskToDelete.delete();
+
+      response.redirect("/categories/" + request.params(":category_id"));
+      return null;
+    });
 
     // get("/categories/:categories_id/delete", (request, response) -> {
     //   HashMap<String, Object> model new HashMap<String, Object>();
