@@ -37,6 +37,7 @@ public class App {
 
       Category.find(category_id).addTask(newTask);
       model.put("task", newTask);
+      model.put("tasks", Task.all());
       model.put("template", "templates/index.vtl");
       response.redirect("/");
       return null;
@@ -50,21 +51,11 @@ public class App {
       newCategory.save();
 
       model.put("category", newCategory);
+      model.put("tasks", Task.all());
       model.put("template", "templates/index.vtl");
       response.redirect("/");
       return null;
     });
- //    // do I need this??
- //    get("/tasks/:id", request,response) -> {
- //      HashMap<String, Object> model = new HashMap<String, Object>();
- //      int id = Integer.parseInt(request.params("id"));
- //      Task task = Task.find(id);
- //      model.put("task", task);
- //      model.put("allCategories", Category.all());
- //      model.put("template", "templates/index.vtl");
- //      return new ModelAndView(model, layout);
- //    }, new VelocityTemplateEngine());
- // //
 
     get("/categories/:id", (request, response) ->{
       HashMap<String, Object> model = new HashMap<String, Object>();
@@ -92,23 +83,16 @@ public class App {
       return null;
     });
 
-    // get("/categories/:categories_id/delete", (request, response) -> {
-    //   HashMap<String, Object> model new HashMap<String, Object>();
-    //
-    //   Category category = Category.find(Integer.parseInt(request.params(":categories_id")));
-    //
-    //   category.delete();
-    //   response.redirect("/");
-    //   return null;
-    // });
-    // get("/categories/:categories_id/tasks/:tasks_id/delete", (request, response) ->{
-    //   HashMap<String, Object> model = new HashMap<String, Object>();
-    //
-    //   Category category = Category.find(Integer.parseInt(request.params(":categories_id")));
-    //   model.put("category", category);
-    //   String categories_id = request.params(":categories_id");
-    // })
+    post("/categories/:id/delete", (request, response) -> {
+      HashMap<String, Object> model = new HashMap<String, Object>();
+
+      Category category = Category.find(Integer.parseInt(request.params(":id")));
+
+      category.delete();
+      response.redirect("/");
+      return null;
+    });
+
+
   }
-
-
 }
