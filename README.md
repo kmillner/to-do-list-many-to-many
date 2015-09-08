@@ -19,4 +19,4 @@ _program on a local server._
 
 ## License
 
-_Author: Yelena Belikova and Leslie Poole_
+_Author: Yelena Belikova and Kallen Millner_
